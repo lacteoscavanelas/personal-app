@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personal · Pedidos y licencias</title>
+<meta name="description" content="Vacaciones, días, francos, adelantos y avisos de ausencia del personal.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+<script>
+  // ↓↓↓ Pegá acá el link de la app (Implementar > Gestionar implementaciones > URL de la aplicación web, termina en /exec)
+  const APP = 'https://script.google.com/macros/s/AKfycbztX0kTAm6b_Vny23ybnqY13rtZqG0Qzo39CM5vpsy93oWF8Kk0rMzpO2i11drpf27a/exec';
+  // ↑↑↑
+
+  // Un link a un pedido (?p=...) se pasa tal cual a la app
+  const destino = APP + location.search;
+  if (/^https:\/\/script\.google\.com\/.+\/exec$/.test(APP)) location.replace(destino);
+</script>
+<style>
+  :root{--bg:#F3F6F9;--ink:#1B2733;--muted:#5B6B7A;--brand:#1F4E9C;--brand-ink:#fff;color-scheme:light}
+  @media (prefers-color-scheme:dark){:root{--bg:#0F1720;--ink:#E6EDF3;--muted:#93A3B3;--brand:#7FA8EA;--brand-ink:#0F1720;color-scheme:dark}}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--ink);
+       font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:center;padding:24px;box-sizing:border-box}
+  h1{font-size:1.6rem;margin:.3em 0}
+  p{color:var(--muted);margin:.4em 0 1.4em}
+  a.btn{display:inline-block;background:var(--brand);color:var(--brand-ink);text-decoration:none;font-weight:700;padding:12px 28px;border-radius:10px}
+  .ic{font-size:3rem}
+</style>
+</head>
+<body>
+  <main>
+    <div class="ic" aria-hidden="true">📋</div>
+    <h1>Personal</h1>
+    <p>Pedidos de vacaciones, días, francos, adelantos y avisos de ausencia.</p>
+    <a class="btn" id="entrar" href="#">Entrar</a>
+  </main>
+  <script>
+    const a = document.getElementById('entrar');
+    if (/^https:\/\/script\.google\.com\/.+\/exec$/.test(APP)) a.href = destino;
+    else { a.removeAttribute('href'); a.textContent = 'Falta configurar el link de la app'; }
+  </script>
+</body>
+</html>
