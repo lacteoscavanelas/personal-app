@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F6F9;--surface:#FFF;--ink:#1B2733;--muted:#5B6B7A;--line:#DCE3EA;--brand:#1F4E9C;--brand-ink:#FFF;--soft:#E6EEF9;
+  --ok:#2D7A4B;--ok-soft:#E3F2E8;--no:#B23A32;--no-soft:#F8E4E2;--pend:#9A620E;--pend-soft:#FBF0DC;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0F1720;--surface:#17212C;--ink:#E6EDF3;--muted:#93A3B3;--line:#2A3744;--brand:#7FA8EA;--brand-ink:#0F1720;--soft:#1C2C42;
+  --ok:#6FC48F;--ok-soft:#183324;--no:#EE8A82;--no-soft:#3A1F1D;--pend:#E3B158;--pend-soft:#372A14;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+header{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top{max-width:1080px;margin:0 auto;padding:12px 20px;font-weight:700;font-size:1.15rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top .marca{margin-right:auto}.top .btn{font-size:.85rem}
+.login{max-width:380px;margin:40px auto;display:block;padding:24px}.login label.f{margin-bottom:14px}.login .btn{width:100%;margin-top:6px}
+.cred{font-family:inherit;font-weight:700;letter-spacing:.04em;background:var(--soft);padding:2px 8px;border-radius:6px}
+.top small{display:block;font-weight:400;font-size:.85rem;color:var(--muted)}
+main{max-width:1080px;margin:0 auto;padding:20px}
+h2{font-size:1.3rem;margin:28px 0 12px}h2:first-child{margin-top:4px}
+.muted{color:var(--muted)}a{color:var(--brand)}
+.note{padding:12px 14px;border-radius:8px;background:var(--soft);margin:12px 0}
+.saldo{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:grid;grid-template-columns:auto 1fr;gap:6px 22px;align-items:center}
+.saldo .num{font-size:3.4rem;font-weight:700;line-height:1;grid-row:span 2}.saldo .num span{font-size:1.2rem;font-weight:400;color:var(--muted)}
+.bar{height:12px;border-radius:6px;background:var(--line);overflow:hidden;display:flex}.bar i{display:block;height:100%}
+.bar .u{background:var(--brand)}.bar .p{background:repeating-linear-gradient(45deg,var(--brand) 0 4px,transparent 4px 8px);opacity:.55}
+.leyenda{font-size:.9rem;color:var(--muted)}
+@media (max-width:520px){.saldo{grid-template-columns:1fr}.saldo .num{grid-row:auto}}
+.tipos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tipo{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.tipo .ic{font-size:1.5rem}.tipo small{color:var(--muted);font-size:.82rem;line-height:1.3}
+.tipo[aria-pressed="true"]{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand);background:var(--soft)}
+form{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.full{grid-column:1/-1}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.92rem;font-weight:700}label.f .h{font-weight:400;color:var(--muted);font-size:.82rem}
+input[type=date],input[type=number],input[type=text],input[type=tel],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+textarea{min-height:76px;resize:vertical}
+label.chk{display:flex;gap:10px;align-items:center}label.chk input{width:20px;height:20px}
+.acciones,.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);padding:9px 16px;border-radius:8px;font-weight:700;text-decoration:none;color:var(--ink);display:inline-block}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}.btn.ok{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.btn.no{color:var(--no);border-color:var(--no);background:transparent}.btn.wa{background:#1E8E4F;border-color:#1E8E4F;color:#fff}
+.btn.sm{padding:5px 10px;font-size:.88rem}.btn:disabled{opacity:.5;cursor:default}
+.calc{font-size:.92rem;color:var(--muted)}.err{color:var(--no);font-size:.9rem}
+.lista{display:flex;flex-direction:column;gap:10px}
+.item{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:4px 14px}
+.item.Pendiente{border-left-color:var(--pend)}.item.Aprobado{border-left-color:var(--ok)}.item.Rechazado{border-left-color:var(--no)}.item.Cancelado{opacity:.6}
+.item .t{font-weight:700}.item .d{color:var(--muted);font-size:.92rem}.item .m,.item .row,.item .x{grid-column:1/-1}
+.item .resp{grid-column:1/-1;font-size:.92rem;padding:8px 10px;border-radius:6px;background:var(--bg)}
+.item .row input{flex:1 1 200px;width:auto;padding:7px 10px}
+.estado{font-size:.82rem;font-weight:700;padding:3px 10px;border-radius:999px;align-self:start;white-space:nowrap}
+.estado.Pendiente{background:var(--pend-soft);color:var(--pend)}.estado.Aprobado{background:var(--ok-soft);color:var(--ok)}.estado.Rechazado{background:var(--no-soft);color:var(--no)}.estado.Cancelado{background:var(--bg);color:var(--muted)}
+.x{font-size:.88rem}.x.warn{color:var(--pend)}.tope{padding:8px 10px;border-radius:6px;background:var(--soft)}
+.aviso{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-radius:14px;background:var(--ok-soft);margin:14px 0}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:10px 14px;border-bottom:3px solid transparent;color:var(--muted);font-weight:700;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--brand)}
+.filtros{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}.filtros select,.filtros input{width:auto;min-width:150px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:top}
+th{font-size:.85rem;color:var(--muted);background:var(--bg)}td input,td select{padding:6px 8px}td.n{text-align:right;font-variant-numeric:tabular-nums}
+.cal-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}.cal-h b{font-size:1.15rem;min-width:180px;text-transform:capitalize}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dow{font-size:.8rem;color:var(--muted);font-weight:700;padding:4px}
+.dia{min-height:90px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px;font-size:.8rem;display:flex;flex-direction:column;gap:3px}
+.dia.fuera{visibility:hidden}.dia.hoy{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}.dia .nro{font-weight:700;color:var(--muted)}
+.chip{border-radius:4px;padding:1px 5px;background:var(--soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip.pend{background:transparent;border:1px dashed var(--pend);color:var(--pend)}.chip.aus{background:var(--no-soft);color:var(--no)}
+@media (max-width:700px){.cal{grid-template-columns:1fr}.dow,.dia.vacio,.dia.fuera{display:none}.dia{min-height:0;flex-direction:row;flex-wrap:wrap;align-items:center}.dia .nro{min-width:70px}}
+.vacio{padding:28px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:14px}
+.banco{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-top:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.banco .n2{font-size:2rem;font-weight:700;line-height:1}
+details summary{cursor:pointer;color:var(--brand);font-weight:700}
+.mov{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.mov .mas{color:var(--ok);font-weight:700}.mov .menos{color:var(--no);font-weight:700}
+.gente{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 14px;margin:6px 0 4px}
+.gente label{display:flex;gap:8px;align-items:center;font-size:.92rem}.gente input{width:18px;height:18px}
+.sec{grid-column:1/-1;display:flex;gap:10px;align-items:center;margin-top:8px;font-weight:700}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header><div class="top"><div class="marca">Personal<small id="quien">Pedidos y licencias</small></div><span id="menu" hidden><button class="btn sm" data-act="verPass">Cambiar contraseña</button> <button class="btn sm" data-act="salir">Salir</button></span></div></header>
+<main id="app"><p class="muted">Cargando…</p></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const PEDIDO = <?!= JSON.stringify(pedido) ?>;
+let SES=null, ROL=null;
+try{SES=localStorage.getItem('personal_ses');ROL=localStorage.getItem('personal_rol')}catch(e){}
+function guardarSesion(s,r){SES=s;ROL=r;try{if(s){localStorage.setItem('personal_ses',s);localStorage.setItem('personal_rol',r)}else{localStorage.removeItem('personal_ses');localStorage.removeItem('personal_rol')}}catch(e){}}
+
+const TIPOS={
+  vacaciones:{n:'Vacaciones',ic:'🏖️',d:'Días corridos de tu licencia anual',si:'Aprobadas',no:'Rechazadas',p:'Pendiente'},
+  dia:{n:'Pedido de día',ic:'📅',d:'Un día o más por un motivo personal',si:'Aprobado',no:'Rechazado',p:'Pendiente'},
+  franco:{n:'Franco compensatorio',ic:'🔁',d:'Usá un día de tu banco de días a favor',si:'Aprobado',no:'Rechazado',p:'Pendiente'},
+  adelanto:{n:'Adelanto de sueldo',ic:'💵',d:'Se descuenta del recibo',si:'Aprobado',no:'Rechazado',p:'Pendiente'},
+  ausencia:{n:'Aviso de ausencia',ic:'🤒',d:'Avisá que no vas a ir o que faltaste',si:'Justificada',no:'Injustificada',p:'Avisada'},
+  licencia:{n:'Licencia especial',ic:'📄',d:'Examen, nacimiento, casamiento, duelo, mudanza',si:'Aprobada',no:'Rechazada',p:'Pendiente'}
+};
+const MODALIDAD=['A cuenta de vacaciones','Sin goce de sueldo','A compensar con horas'];
+const CAT_AUS=['Enfermedad','Familiar enfermo','Trámite','Problema de transporte','Otro'];
+const CAT_LIC=['Examen','Nacimiento','Casamiento','Fallecimiento de familiar','Mudanza','Otra'];
+const DEVOL=['Descuento en el próximo recibo','En 2 cuotas','En 3 cuotas'];
+const CON_CERT=['ausencia','licencia'];
+
+const app=document.getElementById('app');
+const api=(fn,...a)=>new Promise((ok,mal)=>google.script.run.withSuccessHandler(ok).withFailureHandler(e=>{
+  if(/SESION:/.test(e&&e.message||'')){guardarSesion(null,null);pantallaLogin(msg(e));mal({message:'',silencio:true});return}mal(e)})[fn](...a));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toD=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(Date.UTC(y,m-1,d))};
+const dias=(a,b)=>Math.round((toD(b)-toD(a))/864e5)+1;
+const fL=s=>s?toD(s).toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}):'';
+const nd=n=>{n=Number(n)||0;return (n%1?String(n).replace('.',','):String(n))+(n===1?' día':' días')};
+const fCorta=s=>s?toD(s).toLocaleDateString('es-AR',{day:'numeric',month:'numeric',year:'numeric',timeZone:'UTC'}):'';
+const pesos=n=>new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(Number(n)||0);
+const hoyISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const temporadaDe=iso=>{const y=+iso.slice(0,4),m=+iso.slice(5,7);return m>=5?y:y-1};
+const tempLabel=t=>t+'/'+String(t+1).slice(2);
+const enVentana=iso=>{const m=+iso.slice(5,7);return m>=10||m<=4};
+const perLabel=p=>{const [y,m]=p.split('-').map(Number);const f=d=>d.toLocaleDateString('es-AR',{day:'numeric',month:'numeric'});return new Date(y,m-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'})+' (del '+f(new Date(y,m-2,26))+' al '+f(new Date(y,m-1,25))+')'};
+const telWa=t=>{let d=String(t).replace(/\D/g,'');if(!d.startsWith('54'))d='549'+d.replace(/^0/,'');return d};
+const msg=e=>(e&&e.message!==undefined?e.message:String(e||'Error')).replace(/^Error:\s*/,'').replace(/^SESION:\s*/,'');
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('on'),2800)}
+function etiqueta(r){const t=TIPOS[r.Tipo]||TIPOS.dia;return r.Estado==='Aprobado'?t.si:r.Estado==='Rechazado'?t.no:r.Estado==='Cancelado'?'Cancelado':t.p}
+function detalle(r){
+  if(r.Tipo==='adelanto') return pesos(r.Monto)+' · '+esc(r.Devolucion)+(r.Periodo?' · liquidación de '+esc(perLabel(r.Periodo)):'');
+  if(r.Tipo==='franco') return 'Franco el '+fL(r.Desde)+(r.Trabajado?' · por trabajar el '+fL(r.Trabajado):'');
+  let s=r.Desde===r.Hasta?fL(r.Desde):fL(r.Desde)+' al '+fL(r.Hasta);
+  if(r.Dias) s+=' · '+r.Dias+(r.Dias==1?' día':' días');
+  [r.Modalidad,r.Categoria].forEach(x=>{if(x)s+=' · '+esc(x)});
+  if(r.Tipo==='ausencia'&&r.Certificado) s+=' · con certificado';
+  return s;
+}
+function archivos(r){return String(r.Archivos||'').split(/\s+/).filter(Boolean).map((u,i,a)=>'<a class="btn sm" href="'+esc(u)+'" target="_blank" rel="noopener">📎 Ver certificado'+(a.length>1?' '+(i+1):'')+'</a>').join('')}
+
+/* ---------- Archivos: achicar fotos y pasar a base64 ---------- */
+async function prepararArchivo(file){
+  const leer=b=>new Promise((ok,mal)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(',')[1]);fr.onerror=mal;fr.readAsDataURL(b)});
+  if(file.type==='application/pdf'){if(file.size>15e6)throw new Error('El PDF es muy pesado (máximo 15 MB).');return {mime:'application/pdf',b64:await leer(file)}}
+  let bmp=null;try{bmp=await createImageBitmap(file)}catch(e){}
+  if(!bmp) throw new Error('Ese archivo no se puede leer. Subí una foto (JPG o PNG) o un PDF.');
+  const k=Math.min(1,1800/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');
+  c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+  const blob=await new Promise(ok=>c.toBlob(ok,'image/jpeg',0.82));
+  return {mime:'image/jpeg',b64:await leer(blob)};
+}
+async function subirCert(id,file){
+  toast('Subiendo certificado…');
+  try{const a=await prepararArchivo(file);await api('subirCertificado',SES,id,file.name,a.mime,a.b64);toast('Certificado guardado en tu legajo');await cargarEmp()}
+  catch(e){toast(msg(e))}
+}
+
+/* =================== EMPLEADO =================== */
+let E=null,tipoSel=null,archivoSel=null,ultimo=null;
+async function cargarEmp(){E=await api('datosEmpleado',SES);document.getElementById('quien').textContent=E.nombre+(E.sector?' · '+E.sector:'');renderEmp()}
+function renderEmp(){
+  const v=E.vac;let h='<h2>Tus vacaciones '+tempLabel(v.temporada)+'</h2>';
+  if(v.total==null) h+='<div class="note">Recursos Humanos todavía no cargó tu fecha de ingreso. Igual podés pedir vacaciones.</div>';
+  else{const rest=Math.max(0,v.total-v.usados),pu=v.total?Math.min(100,v.usados/v.total*100):0,pp=v.total?Math.min(100-pu,v.pend/v.total*100):0;
+    h+='<div class="saldo"><div class="num">'+rest+' <span>de '+v.total+' días</span></div><div class="bar"><i class="u" style="width:'+pu+'%"></i><i class="p" style="width:'+pp+'%"></i></div><div class="leyenda">'+v.usados+' tomados'+(v.pend?' · '+v.pend+' pedidos esperando respuesta':'')+'. Días corridos según tu antigüedad. Se toman entre el 1 de octubre y el 30 de abril.</div></div>'}
+  const antV=(v.anteriores||[]).filter(a=>!a.vencido&&a.restante>0);
+  if(antV.length) h+='<div class="note">'+antV.map(a=>'Además tenés <b>'+nd(a.restante)+'</b> pendientes de la temporada '+esc(a.temporada)+', que vencen el <b>'+fCorta(a.vence)+'</b>.').join(' ')+' Cuando pedís vacaciones se usan primero estos días.</div>';
+  const b=E.banco;
+  h+='<div class="banco"><div class="n2">'+String(b.saldo).replace('.',',')+'</div><div><b>'+(b.saldo===1?'Día a favor':'Días a favor')+'</b><div class="leyenda">Por feriados o francos que trabajaste. Los usás pidiendo un franco compensatorio.'+(b.pedidosPend?' Ya pediste '+nd(b.pedidosPend)+'.':'')+'</div></div>'+
+    (b.movimientos.length?'<details style="flex-basis:100%"><summary>Ver movimientos</summary>'+b.movimientos.map(m=>'<div class="mov"><span>'+fL(m.Fecha)+' · '+esc(m.Motivo)+'</span><span class="'+(m.Movimiento==='Crédito'?'mas':'menos')+'">'+(m.Movimiento==='Crédito'?'+':'−')+String(Number(m.Dias)).replace('.',',')+'</span></div>').join('')+'</details>':'')+'</div>';
+  if(E.encargado) h+='<p class="muted">Tu encargado: '+esc(E.encargado.nombre)+'</p>';
+  h+='<h2>¿Qué necesitás pedir?</h2><div class="tipos">'+Object.entries(TIPOS).map(([k,t])=>'<button class="tipo" data-act="tipo" data-t="'+k+'" aria-pressed="'+(tipoSel===k)+'"><span class="ic">'+t.ic+'</span><b>'+t.n+'</b><small>'+t.d+'</small></button>').join('')+'</div>';
+  if(tipoSel) h+=formulario(tipoSel);
+  if(ultimo) h+='<div class="aviso"><span>Tu pedido quedó cargado.'+(ultimo.wa?' Avisale a '+esc(E.encargado.nombre)+' para que lo vea.':' Lo va a ver Recursos Humanos.')+'</span>'+(ultimo.wa?'<a class="btn wa" href="'+esc(ultimo.wa)+'" target="_blank" rel="noopener">Avisar por WhatsApp</a>':'')+'</div>';
+  h+='<h2>Tus pedidos</h2>';
+  h+=E.pedidos.length?'<div class="lista">'+E.pedidos.map(tarjetaEmp).join('')+'</div>':'<div class="vacio">Todavía no hiciste ningún pedido. Elegí uno de arriba para empezar.</div>';
+  app.innerHTML=h; calc();
+}
+function formulario(t){
+  const f=(id,lab,inner,hint,full)=>'<label class="f'+(full?' full':'')+'">'+lab+(hint?'<span class="h">'+hint+'</span>':'')+inner+'</label>';
+  const fecha=(id,lab,hint)=>f(id,lab,'<input type="date" id="'+id+'">',hint);
+  const sel=(id,lab,ops)=>f(id,lab,'<select id="'+id+'">'+ops.map(o=>'<option>'+esc(o)+'</option>').join('')+'</select>');
+  let h='<form id="form" data-t="'+t+'" novalidate>';
+  if(t==='licencia') h+=sel('categoria','Tipo de licencia',CAT_LIC);
+  if(t==='ausencia') h+=sel('categoria','Motivo',CAT_AUS);
+  if(t==='franco'){const b=E.banco;
+    h+='<div class="full tope">'+(b.disponible>=1?'Tenés '+nd(b.disponible)+' disponible'+(b.disponible===1?'':'s')+' en tu banco.':'No tenés días disponibles en tu banco. Si trabajaste un feriado o un franco, pedile a tu encargado que lo cargue.')+'</div>';
+    h+=fecha('desde','Día de franco que pedís');}
+  else if(t==='adelanto'){
+    const a=E.adelanto;
+    h+='<div class="full tope">'+(a.tope!=null?'Podés pedir hasta <b>'+pesos(Math.max(0,a.tope-a.usado))+'</b> en la liquidación de '+esc(perLabel(a.periodo))+(a.usado?'. Ya pediste '+pesos(a.usado)+' de un tope de '+pesos(a.tope):'. El tope es el '+esc(a.pct)+' % de tu sueldo')+'.':'Este adelanto va a la liquidación de '+esc(perLabel(a.periodo))+'.')+'</div>';
+    h+=f('monto','Monto','<input type="number" id="monto" min="1" step="1" inputmode="numeric">')+sel('devolucion','Cómo se devuelve',DEVOL);
+  } else h+=fecha('desde','Desde')+fecha('hasta','Hasta','Dejalo vacío si es un solo día');
+  if(t==='dia') h+=sel('modalidad','Cómo se toma',MODALIDAD);
+  if(t==='ausencia') h+='<label class="chk full"><input type="checkbox" id="certificado"> Voy a presentar certificado</label>';
+  if(CON_CERT.includes(t)) h+=f('archivo','Certificado','<input type="file" id="archivo" accept="image/*,application/pdf">'+(archivoSel?'<span class="h">Elegido: '+esc(archivoSel.name)+'</span>':''),'Foto o PDF. Si todavía no lo tenés, lo subís después desde tus pedidos.',true);
+  h+=f('motivo',t==='vacaciones'?'Comentario':'Motivo o detalle','<textarea id="motivo" maxlength="500"></textarea>',t==='vacaciones'?'Opcional':'',true);
+  h+='<div class="full acciones"><button class="btn pri" type="submit">'+(t==='ausencia'?'Enviar aviso':'Enviar pedido')+'</button><button class="btn" type="button" data-act="tipo" data-t="">Cancelar</button><span class="calc" id="calc"></span><span class="err" id="err"></span></div></form>';
+  return h;
+}
+function calc(){
+  const fm=document.getElementById('form'),c=document.getElementById('calc');if(!fm||!c)return;
+  const d=fm.querySelector('#desde'),hs=fm.querySelector('#hasta');
+  if(!d||!hs||!d.value){c.textContent='';return}
+  const fin=hs.value||d.value,n=dias(d.value,fin);if(n<1){c.textContent='';return}
+  let s=n+(n===1?' día corrido':' días corridos');
+  if(fm.dataset.t==='vacaciones'){
+    const tp=temporadaDe(d.value);s+=' · temporada '+tempLabel(tp);
+    const antD=(E.vac.anteriores||[]).filter(a=>!a.vencido&&d.value<=a.vence).reduce((t,a)=>t+Math.max(0,a.restante),0);
+    if(tp===E.vac.temporada&&E.vac.total!=null){const q=E.vac.total-E.vac.usados-E.vac.pend+antD;s+=(antD?' · usa primero '+nd(Math.min(n,antD))+' pendientes':'')+(n>q?' · supera tu saldo ('+Math.max(0,q)+' disponibles)':' · te quedarían '+(q-n))}
+    if(!enVentana(d.value)||!enVentana(fin)) s+=' · fuera del período 1/10 al 30/4: necesita autorización especial';
+  }
+  c.textContent=s;
+}
+function tarjetaEmp(r){
+  const t=TIPOS[r.Tipo]||TIPOS.dia;
+  let h='<div class="item '+esc(r.Estado)+'"><div><div class="t">'+t.ic+' '+t.n+'</div><div class="d">'+detalle(r)+'</div></div><span class="estado '+esc(r.Estado)+'">'+etiqueta(r)+'</span>';
+  if(r.Motivo) h+='<div class="m">'+esc(r.Motivo)+'</div>';
+  if(r.Nota) h+='<div class="resp"><b>Respuesta:</b> '+esc(r.Nota)+'</div>';
+  h+='<div class="x muted">Enviado el '+esc(r.Creado)+'</div>';
+  let row=archivos(r);
+  if(r.Estado!=='Cancelado'&&CON_CERT.includes(r.Tipo)) row+='<label class="btn sm">📎 '+(r.Archivos?'Subir otro certificado':'Subir certificado')+'<input type="file" accept="image/*,application/pdf" data-cert="'+esc(r.Id)+'" hidden></label>';
+  if(r.Estado==='Pendiente') row+='<button class="btn sm" data-act="cancelar" data-id="'+esc(r.Id)+'">'+(r.Tipo==='ausencia'?'Anular aviso':'Cancelar pedido')+'</button>';
+  if(row) h+='<div class="row">'+row+'</div>';
+  return h+'</div>';
+}
+
+/* =================== RECURSOS HUMANOS =================== */
+let A=null,tab='pend',cal=new Date(),filtro={tipo:'',estado:'',q:''};cal.setDate(1);
+async function cargarAdmin(){A=await api('datosAdmin',SES);document.getElementById('quien').textContent='Recursos Humanos';renderAdmin()}
+const nomPer=c=>{const p=A.personas.find(x=>x.clave===c);return p?(p.nombre+' '+p.apellido):c};
+function ocupa(r){if(r.Tipo==='adelanto'||!r.Desde)return null;return [r.Desde,r.Hasta||r.Desde]}
+function cruces(r){const g=ocupa(r);if(!g)return[];const s=new Set();A.pedidos.forEach(x=>{if(x.Clave===r.Clave||x.Estado==='Cancelado'||x.Estado==='Rechazado')return;const o=ocupa(x);if(o&&o[0]<=g[1]&&o[1]>=g[0])s.add(nomPer(x.Clave))});return[...s]}
+function renderAdmin(){
+  const pend=A.pedidos.filter(r=>r.Estado==='Pendiente');
+  const tabs=[['pend','Por responder'+(pend.length?' ('+pend.length+')':'')],['cal','Quién falta'],['personal','Personal'],['banco','Banco de días'],['hist','Historial'],['ajustes','Encargados y topes']];
+  let h='<div class="tabs" role="tablist">'+tabs.map(([k,l])=>'<button role="tab" data-act="tab" data-v="'+k+'" aria-selected="'+(tab===k)+'">'+l+'</button>').join('')+'</div>';
+  if(tab==='pend') h+=pend.length?'<div class="lista">'+pend.map(tarjetaAdmin).join('')+'</div>':'<div class="vacio">No hay pedidos esperando respuesta.</div>';
+  if(tab==='cal') h+=vistaCal();
+  if(tab==='personal') h+=vistaPersonal();
+  if(tab==='hist') h+=vistaHist();
+  if(tab==='ajustes') h+=vistaAjustes();
+  if(tab==='banco') h+=vistaBanco();
+  app.innerHTML=h;
+}
+function tarjetaAdmin(r){
+  const t=TIPOS[r.Tipo]||TIPOS.dia,p=A.personas.find(x=>x.clave===r.Clave)||{};
+  let h='<div class="item '+esc(r.Estado)+'" id="ped-'+esc(r.Id)+'"><div><div class="t">'+esc(nomPer(r.Clave))+' · '+t.ic+' '+t.n+'</div><div class="d">'+detalle(r)+'</div></div><span class="estado '+esc(r.Estado)+'">'+etiqueta(r)+'</span>';
+  if(r.Motivo) h+='<div class="m">'+esc(r.Motivo)+'</div>';
+  h+='<div class="x muted">'+(p.sector?esc(p.sector)+' · ':'')+'Enviado el '+esc(r.Creado)+'</div>';
+  const cr=r.Estado!=='Cancelado'?cruces(r):[];if(cr.length) h+='<div class="x warn">Esos días también faltan: '+cr.map(esc).join(', ')+'</div>';
+  if((r.Tipo==='vacaciones'||(r.Tipo==='dia'&&r.Modalidad==='A cuenta de vacaciones'))&&r.Estado==='Pendiente'&&p.vac&&p.vac.total!=null){
+    const v=p.vac,antD=(v.anteriores||[]).filter(a=>!a.vencido&&a.restante>0);
+    h+='<div class="x tope">Temporada '+tempLabel(v.temporada)+': le quedan '+nd(v.total-v.usados-v.pend)+' sin contar este pedido'+(antD.length?' · pendientes anteriores: '+antD.map(a=>nd(a.restante)+' (vencen '+fCorta(a.vence)+')').join(', '):'')+'.</div>';
+  }
+  if(r.Tipo==='adelanto'&&r.Estado!=='Cancelado'){
+    const tot=A.pedidos.filter(x=>x.Clave===r.Clave&&x.Tipo==='adelanto'&&x.Periodo===r.Periodo&&x.Estado!=='Rechazado'&&x.Estado!=='Cancelado').reduce((s,x)=>s+(Number(x.Monto)||0),0);
+    h+='<div class="x tope">'+(p.tope==null?'Sin salario cargado: no hay tope para controlar.':'Tope del período '+pesos(p.tope)+' · con este pedido suma '+pesos(tot)+(tot>p.tope?' · <b style="color:var(--no)">supera el tope</b>':''))+'</div>';
+  }
+  if(r.Nota&&r.Estado!=='Pendiente') h+='<div class="resp"><b>Respuesta:</b> '+esc(r.Nota)+'</div>';
+  let row=archivos(r);
+  if(r.Trello) row+='<a class="btn sm" href="'+esc(r.Trello)+'" target="_blank" rel="noopener">Ver en Trello</a>';
+  if(r.EventoId) row+='<span class="muted" style="font-size:.85rem">📆 En el calendario Vacaciones</span>';
+  if(r.Estado==='Pendiente') row+='<input type="text" placeholder="Nota para el empleado (opcional)" id="nota-'+esc(r.Id)+'"><button class="btn ok sm" data-act="resp" data-id="'+esc(r.Id)+'" data-e="Aprobado">'+(r.Tipo==='ausencia'?'Justificar':'Aprobar')+'</button><button class="btn no sm" data-act="resp" data-id="'+esc(r.Id)+'" data-e="Rechazado">'+(r.Tipo==='ausencia'?'No justificar':'Rechazar')+'</button>';
+  else if(r.Estado!=='Cancelado') row+='<button class="btn sm" data-act="resp" data-id="'+esc(r.Id)+'" data-e="Pendiente">Volver a pendiente</button>';
+  if(row) h+='<div class="row">'+row+'</div>';
+  return h+'</div>';
+}
+function vistaCal(){
+  const y=cal.getFullYear(),m=cal.getMonth(),hoy=hoyISO();
+  const items=A.pedidos.filter(r=>r.Estado!=='Cancelado'&&r.Estado!=='Rechazado'&&ocupa(r))
+    .concat(A.banco.filter(m=>m.Movimiento==='Uso'&&!m.Pedido&&/^Franco tomado/.test(m.Motivo)).map(m=>({Clave:m.Clave,Tipo:'franco',Estado:'Aprobado',Desde:m.Fecha,Hasta:m.Fecha})));
+  let h='<div class="cal-h"><button class="btn sm" data-act="mes" data-d="-1" aria-label="Mes anterior">‹</button><b>'+cal.toLocaleDateString('es-AR',{month:'long',year:'numeric'})+'</b><button class="btn sm" data-act="mes" data-d="1" aria-label="Mes siguiente">›</button><span class="muted" style="font-size:.88rem">Línea punteada: sin responder</span></div><div class="cal">'+['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(d=>'<div class="dow">'+d+'</div>').join('');
+  const first=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate();
+  for(let i=0;i<first;i++) h+='<div class="dia fuera"></div>';
+  for(let d=1;d<=n;d++){const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const hay=items.filter(r=>{const o=ocupa(r);return o[0]<=iso&&o[1]>=iso});
+    h+='<div class="dia'+(hay.length?'':' vacio')+(iso===hoy?' hoy':'')+'"><span class="nro">'+new Date(y,m,d).toLocaleDateString('es-AR',{weekday:'short',day:'numeric'})+'</span>'+hay.map(r=>'<span class="chip'+(r.Estado==='Pendiente'?' pend':'')+(r.Tipo==='ausencia'?' aus':'')+'" title="'+esc(nomPer(r.Clave)+' · '+TIPOS[r.Tipo].n)+'">'+TIPOS[r.Tipo].ic+' '+esc(nomPer(r.Clave))+'</span>').join('')+'</div>'}
+  return h+'</div>';
+}
+function vistaPersonal(){
+  let h='<p class="muted">Cada persona entra con su usuario y una contraseña temporal, que la app le pide cambiar la primera vez. Mientras no la cambie, la ves acá y se la podés mandar por WhatsApp (cargá su celular). Si alguien se la olvida, tocá Nueva contraseña. <a href="'+esc(A.legajos)+'" target="_blank" rel="noopener">Abrir carpeta Legajos</a></p>';
+  h+='<div class="scroll"><table><thead><tr><th>Empleado</th><th>Usuario</th><th>Contraseña</th><th>Encargado</th><th>Ingreso</th><th>Salario neto</th><th>Vac. '+tempLabel(A.temporada)+'</th><th>Tomadas</th><th>Quedan</th><th>Pendientes ant.</th><th>Celular</th><th></th></tr></thead><tbody>';
+  const encs=A.encargados.map(e=>e.nombre);
+  A.personas.forEach(p=>{const c=esc(p.clave),v=p.vac;
+    const wa=p.telefono&&p.temp?'https://wa.me/'+telWa(p.telefono)+'?text='+encodeURIComponent('Hola '+p.nombre.split(' ')[0]+', ya podés pedir vacaciones, días, adelantos y avisar ausencias desde la app de Personal: '+A.url+'\nUsuario: '+p.usuario+'\nContraseña temporal: '+p.temp+'\nLa primera vez te va a pedir que elijas una contraseña nueva.'):'';
+    const passCell=p.temp?'<span class="cred">'+esc(p.temp)+'</span> <span class="muted" style="font-size:.82rem">temporal</span>'+(wa?' <a class="btn sm wa" href="'+esc(wa)+'" target="_blank" rel="noopener">WhatsApp</a>':''):'<span class="muted" style="font-size:.85rem">'+(p.activo?'Ya la cambió':'Sin contraseña')+'</span>';
+    h+='<tr><td><b>'+esc(p.apellido+', '+p.nombre)+'</b><br><span class="muted" style="font-size:.82rem">'+esc([p.tarea,p.sector].filter(Boolean).join(' · '))+'</span>'+(p.carpeta?' <a href="'+esc(p.carpeta)+'" target="_blank" rel="noopener" style="font-size:.85rem">Legajo</a>':'')+'</td>'+
+      '<td><input type="text" id="usr-'+c+'" value="'+esc(p.usuario)+'" style="width:120px"></td>'+
+      '<td>'+passCell+' <button class="btn sm" data-act="reset" data-tipo="emp" data-c="'+c+'">Nueva contraseña</button></td>'+
+      '<td><select id="enc-'+c+'"><option value="">Sin asignar</option>'+encs.map(n=>'<option'+(n===p.encargado?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select></td>'+
+      '<td><input type="date" id="ing-'+c+'" value="'+esc(p.ingreso)+'"></td>'+
+      '<td><input type="number" id="sal-'+c+'" value="'+esc(p.salario)+'" step="1000" style="width:130px"></td>'+
+      '<td><input type="number" id="vd-'+c+'" value="'+esc(p.vacDias)+'" placeholder="'+(p.vacAuto??'—')+'" style="width:80px"></td>'+
+      '<td class="n">'+v.usados+(v.pend?' <span class="muted">(+'+v.pend+')</span>':'')+'</td><td class="n">'+(v.total==null?'—':v.total-v.usados)+'</td>'+
+      '<td class="n">'+((v.anteriores||[]).filter(a=>!a.vencido&&a.restante>0).map(a=>a.restante+' <span class="muted" style="font-size:.82rem">vence '+fCorta(a.vence)+'</span>').join('<br>')||'')+'</td>'+
+      '<td><input type="tel" id="tel-'+c+'" value="'+esc(p.telefono)+'" placeholder="11 2345 6789" style="width:130px"></td>'+
+      '<td><button class="btn sm pri" data-act="guardarP" data-c="'+c+'">Guardar</button></td></tr>'});
+  h+='</tbody></table></div>';
+  h+=vistaVacPend();
+  return h;
+}
+function vistaVacPend(){
+  const t=A.temporada-1, ant=t+'/'+String(t+1).slice(2), vence=new Date().getFullYear()+'-12-31';
+  const temps=[A.temporada-1,A.temporada-2,A.temporada-3].map(x=>x+'/'+String(x+1).slice(2));
+  let h='<h2>Vacaciones pendientes de temporadas anteriores</h2><p class="muted">Para quien no se tomó todas sus vacaciones antes del 30 de abril. Cargás cuántos días le quedaron y hasta cuándo los puede usar. Cuando pide vacaciones, la app usa primero estos días y, pasada la fecha de vencimiento, los que sobren se pierden.</p>';
+  h+='<form id="fVP" novalidate><label class="f">Empleado<select id="vp-p"><option value="">Elegí…</option>'+A.personas.map(p=>'<option value="'+esc(p.clave)+'">'+esc(p.apellido+', '+p.nombre)+'</option>').join('')+'</select></label>'+
+    '<label class="f">Temporada de origen<select id="vp-t">'+temps.map(x=>'<option'+(x===ant?' selected':'')+'>'+x+'</option>').join('')+'</select></label>'+
+    '<label class="f">Días pendientes<input type="number" id="vp-d" min="1" max="60" step="1"></label>'+
+    '<label class="f">Vencen el<input type="date" id="vp-v" value="'+vence+'"></label>'+
+    '<label class="f full">Nota<span class="h">Opcional, por ejemplo: acordado con el encargado</span><input type="text" id="vp-n" maxlength="150"></label>'+
+    '<div class="full acciones"><button class="btn pri" type="submit">Cargar pendientes</button><span class="err"></span></div></form>';
+  const filas=[];A.personas.forEach(p=>(p.vac.anteriores||[]).forEach(a=>filas.push({p,a})));
+  filas.sort((x,y)=>x.a.vence.localeCompare(y.a.vence));
+  if(filas.length){
+    h+='<div class="scroll" style="margin-top:14px"><table><thead><tr><th>Empleado</th><th>Temporada</th><th>Días</th><th>Usados</th><th>Pedidos</th><th>Quedan</th><th>Vencen</th><th></th></tr></thead><tbody>'+
+      filas.map(({p,a})=>'<tr><td><b>'+esc(p.apellido+', '+p.nombre)+'</b>'+(a.nota?'<br><span class="muted" style="font-size:.82rem">'+esc(a.nota)+'</span>':'')+'</td><td>'+esc(a.temporada)+'</td><td class="n">'+a.dias+'</td><td class="n">'+a.usado+'</td><td class="n">'+(a.pend||'')+'</td><td class="n"><b>'+a.restante+'</b></td><td>'+fCorta(a.vence)+(a.vencido?(a.restante>0?' <span style="color:var(--no);font-size:.85rem">vencidos</span>':''):'')+'</td><td><button class="btn no sm" data-act="borrarVP" data-id="'+esc(a.id)+'">Borrar</button></td></tr>').join('')+'</tbody></table></div>';
+  }
+  return h;
+}
+function vistaHist(){
+  const l=A.pedidos.filter(r=>(!filtro.tipo||r.Tipo===filtro.tipo)&&(!filtro.estado||r.Estado===filtro.estado)&&(!filtro.q||nomPer(r.Clave).toLowerCase().includes(filtro.q.toLowerCase()))).slice().reverse();
+  let h='<div class="filtros"><input type="text" id="fq" placeholder="Buscar por nombre" value="'+esc(filtro.q)+'">'+
+    '<select id="ft"><option value="">Todos los tipos</option>'+Object.entries(TIPOS).map(([k,t])=>'<option value="'+k+'"'+(filtro.tipo===k?' selected':'')+'>'+t.n+'</option>').join('')+'</select>'+
+    '<select id="fe"><option value="">Todos los estados</option>'+['Pendiente','Aprobado','Rechazado','Cancelado'].map(e=>'<option'+(filtro.estado===e?' selected':'')+'>'+e+'</option>').join('')+'</select>'+
+    '<a class="btn sm" href="'+esc(A.planilla)+'" target="_blank" rel="noopener">Abrir planilla</a></div>';
+  return h+(l.length?'<div class="lista">'+l.map(tarjetaAdmin).join('')+'</div>':'<div class="vacio">No hay pedidos con esos filtros.</div>');
+}
+let bancoFiltro='';
+function vistaBanco(){
+  const hoy=hoyISO(),sectores={};
+  A.personas.forEach(p=>{(sectores[p.sector||'Sin sector']=sectores[p.sector||'Sin sector']||[]).push(p)});
+  let h='<h2>Sumar días trabajados</h2><p class="muted">Cargá acá los feriados, francos o domingos que alguien trabajó y no le correspondían. Quedan como días a favor que después usa pidiendo un franco compensatorio. Si trabajó todo un sector, marcalo entero.</p>';
+  h+='<form id="fCred" novalidate><label class="f">Fecha trabajada<input type="date" id="cr-f" value="'+hoy+'"></label>'+
+    '<label class="f">Días a favor<input type="number" id="cr-d" value="1" min="0.5" max="30" step="0.5"></label>'+
+    '<label class="f">Motivo<select id="cr-m">'+A.motivosCredito.map(m=>'<option>'+esc(m)+'</option>').join('')+'</select></label>'+
+    '<label class="f">Detalle<span class="h">Opcional, por ejemplo: Feriado 20 de noviembre</span><input type="text" id="cr-x" maxlength="120"></label>'+
+    '<div class="full"><b>Quiénes trabajaron</b><div class="gente">'+Object.keys(sectores).sort().map(sec=>'<div class="sec">'+esc(sec)+' <button type="button" class="btn sm" data-act="marcarSec" data-s="'+esc(sec)+'">Marcar todos</button></div>'+
+      sectores[sec].map(p=>'<label><input type="checkbox" class="cr-p" data-s="'+esc(sec)+'" value="'+esc(p.clave)+'"> '+esc(p.apellido+', '+p.nombre)+'</label>').join('')).join('')+'</div></div>'+
+    '<div class="full acciones"><button class="btn pri" type="submit">Sumar al banco</button><span class="err"></span></div></form>';
+  h+='<h2>Registrar un uso</h2><p class="muted">Para un franco que se tomó sin pedirlo en la app, o días que se pagaron en la liquidación. Los francos que se piden y aprobás en la app se descuentan solos.</p>';
+  h+='<form id="fUso" novalidate><label class="f">Empleado<select id="us-p"><option value="">Elegí…</option>'+A.personas.filter(p=>p.banco.saldo>0).map(p=>'<option value="'+esc(p.clave)+'">'+esc(p.apellido+', '+p.nombre)+' ('+String(p.banco.saldo).replace('.',',')+')</option>').join('')+'</select></label>'+
+    '<label class="f">Fecha<input type="date" id="us-f" value="'+hoy+'"></label>'+
+    '<label class="f">Días<input type="number" id="us-d" value="1" min="0.5" max="30" step="0.5"></label>'+
+    '<label class="f">Motivo<select id="us-m">'+A.motivosUso.map(m=>'<option>'+esc(m)+'</option>').join('')+'</select></label>'+
+    '<div class="full acciones"><button class="btn pri" type="submit">Descontar del banco</button><span class="err"></span></div></form>';
+  h+='<h2>Saldos</h2><div class="scroll"><table><thead><tr><th>Empleado</th><th>Sector</th><th>Ganados</th><th>Usados</th><th>Pedidos sin responder</th><th>Saldo</th></tr></thead><tbody>';
+  A.personas.filter(p=>p.banco.favor||p.banco.usado||p.banco.pedidosPend).forEach(p=>h+='<tr><td><b>'+esc(p.apellido+', '+p.nombre)+'</b></td><td>'+esc(p.sector)+'</td><td class="n">'+String(p.banco.favor).replace('.',',')+'</td><td class="n">'+String(p.banco.usado).replace('.',',')+'</td><td class="n">'+(p.banco.pedidosPend||'')+'</td><td class="n"><b>'+String(p.banco.saldo).replace('.',',')+'</b></td></tr>');
+  if(!A.personas.some(p=>p.banco.favor||p.banco.usado)) h+='<tr><td colspan="6" class="muted">Todavía no hay días cargados.</td></tr>';
+  h+='</tbody></table></div>';
+  const movs=A.banco.filter(m=>!bancoFiltro||m.Clave===bancoFiltro).slice().reverse();
+  h+='<h2>Movimientos</h2><div class="filtros"><select id="bf"><option value="">Todas las personas</option>'+A.personas.map(p=>'<option value="'+esc(p.clave)+'"'+(bancoFiltro===p.clave?' selected':'')+'>'+esc(p.apellido+', '+p.nombre)+'</option>').join('')+'</select></div>';
+  h+=movs.length?'<div class="scroll"><table><thead><tr><th>Fecha</th><th>Empleado</th><th>Motivo</th><th>Días</th><th>Cargado</th><th></th></tr></thead><tbody>'+movs.map(m=>'<tr><td>'+fL(m.Fecha)+'</td><td>'+esc(nomPer(m.Clave))+'</td><td>'+esc(m.Motivo)+'</td><td class="n" style="color:var(--'+(m.Movimiento==='Crédito'?'ok':'no')+');font-weight:700">'+(m.Movimiento==='Crédito'?'+':'−')+String(Number(m.Dias)).replace('.',',')+'</td><td class="muted">'+esc(m.Cargado)+(m.Por?' · '+esc(m.Por):'')+'</td><td>'+(m.Pedido?'<span class="muted" style="font-size:.85rem">Por pedido</span>':'<button class="btn no sm" data-act="borrarMov" data-id="'+esc(m.Id)+'">Borrar</button>')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="vacio">No hay movimientos.</div>';
+  return h;
+}
+function vistaAjustes(){
+  let h='<h2>Tope de adelantos</h2><p class="muted">Porcentaje del sueldo neto que cada persona puede pedir por período de liquidación (del 26 al 25). La LCT (art. 130) fija como máximo el 50 %, salvo urgencias.</p><p><input type="number" id="tope" min="1" max="100" value="'+esc(A.topePct)+'" style="width:90px"> % del sueldo</p>';
+  h+='<h2>Encargados</h2><p class="muted">Reciben el aviso por WhatsApp cuando alguien de su equipo carga un pedido. Número con código de área, sin 0 y sin 15.</p><div class="scroll"><table><thead><tr><th>Nombre</th><th>WhatsApp</th></tr></thead><tbody>';
+  [...A.encargados,{nombre:'',tel:''}].forEach((e,i)=>h+='<tr><td><input type="text" class="en-n" value="'+esc(e.nombre)+'" placeholder="'+(e.nombre?'':'Nuevo encargado')+'"></td><td><input type="tel" class="en-t" value="'+esc(e.tel)+'"></td></tr>');
+  h+='</tbody></table></div><p class="muted" style="font-size:.88rem">Para quitar un encargado, borrá su nombre y guardá.</p><button class="btn pri" data-act="ajustes">Guardar cambios</button>';
+  const ig=A.integraciones||{};
+  h+='<h2>Conexiones</h2><div class="scroll"><table><tbody>'+
+    '<tr><td><b>Slack #rrhh</b></td><td>'+(ig.slack?'Conectado: avisa pedidos nuevos, certificados y adelantos aprobados':'<span class="muted">Sin conectar (falta SLACK_WEBHOOK)</span>')+'</td></tr>'+
+    '<tr><td><b>Calendario Vacaciones</b></td><td>'+(ig.calendario?'Conectado · <a href="'+esc(ig.calendario)+'" target="_blank" rel="noopener">Abrir en Google Calendar</a>':'<span class="muted">Sin crear (ejecutá migrar)</span>')+'</td></tr>'+
+    '<tr><td><b>Trello</b></td><td>'+(ig.trello?'Conectado: crea una tarjeta por cada adelanto aprobado':'<span class="muted">Sin conectar (faltan las claves de Trello)</span>')+'</td></tr></tbody></table></div>';
+  h+='<h2>Usuarios de Recursos Humanos</h2><p class="muted">Pueden aprobar pedidos y ven sueldos y legajos.</p><div class="scroll"><table><thead><tr><th>Usuario</th><th>Nombre</th><th>Contraseña</th><th></th></tr></thead><tbody>';
+  A.admins.forEach(a=>h+='<tr><td><b>'+esc(a.usuario)+'</b></td><td>'+esc(a.nombre)+'</td><td>'+(a.temp?'<span class="cred">'+esc(a.temp)+'</span> <span class="muted" style="font-size:.82rem">temporal</span>':'<span class="muted" style="font-size:.85rem">Ya la cambió</span>')+'</td><td><button class="btn sm" data-act="reset" data-tipo="admin" data-c="'+esc(a.usuario)+'">Nueva contraseña</button> <button class="btn no sm" data-act="quitarAdmin" data-c="'+esc(a.usuario)+'">Quitar</button></td></tr>');
+  h+='<tr><td><input type="text" id="adm-u" placeholder="usuario"></td><td><input type="text" id="adm-n" placeholder="Nombre"></td><td></td><td><button class="btn pri sm" data-act="agregarAdmin">Agregar</button></td></tr></tbody></table></div>';
+  return h;
+}
+
+/* =================== Eventos =================== */
+document.addEventListener('click',async ev=>{
+  const b=ev.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+  try{
+    if(a==='tipo'){tipoSel=b.dataset.t||null;archivoSel=null;ultimo=null;renderEmp();const f=document.getElementById('form');if(f)f.scrollIntoView({block:'nearest'})}
+    if(a==='cancelar'){b.disabled=true;await api('cancelarPedido',SES,b.dataset.id);toast('Pedido cancelado');await cargarEmp()}
+    if(a==='tab'){tab=b.dataset.v;renderAdmin()}
+    if(a==='mes'){cal.setMonth(cal.getMonth()+Number(b.dataset.d));renderAdmin()}
+    if(a==='resp'){b.disabled=true;const n=document.getElementById('nota-'+b.dataset.id);const rr=await api('responderPedido',SES,b.dataset.id,b.dataset.e,n?n.value:'');toast(['Respuesta guardada'].concat((rr&&rr.avisos)||[]).join(' · '));await cargarAdmin()}
+    if(a==='guardarP'){const c=b.dataset.c,v=x=>document.getElementById(x+'-'+c).value;b.disabled=true;
+      await api('guardarPersona',SES,c,{ingreso:v('ing'),salario:v('sal'),vacDias:v('vd'),encargado:v('enc'),telefono:v('tel'),usuario:v('usr')});toast('Datos guardados');await cargarAdmin()}
+    if(a==='reset'){if(!confirm('Se va a generar una contraseña temporal nueva y la actual deja de funcionar. ¿Seguir?'))return;b.disabled=true;await api('resetearContrasena',SES,b.dataset.tipo==='admin'?'admin':'emp',b.dataset.c);toast('Contraseña temporal generada');await cargarAdmin()}
+    if(a==='agregarAdmin'){b.disabled=true;await api('agregarAdmin',SES,document.getElementById('adm-u').value,document.getElementById('adm-n').value);toast('Usuario agregado');await cargarAdmin()}
+    if(a==='quitarAdmin'){if(!confirm('¿Quitar el usuario '+b.dataset.c+'?'))return;b.disabled=true;await api('quitarAdmin',SES,b.dataset.c);toast('Usuario quitado');await cargarAdmin()}
+    if(a==='marcarSec'){const cs=[...document.querySelectorAll('.cr-p')].filter(c=>c.dataset.s===b.dataset.s);const todos=cs.every(c=>c.checked);cs.forEach(c=>c.checked=!todos);b.textContent=todos?'Marcar todos':'Desmarcar';return}
+    if(a==='borrarVP'){if(!confirm('¿Borrar estos días pendientes? Si ya usó alguno, esos días pasan a descontarse de la temporada actual.'))return;b.disabled=true;await api('borrarVacPendiente',SES,b.dataset.id);toast('Pendientes borrados');await cargarAdmin()}
+    if(a==='borrarMov'){if(!confirm('¿Borrar este movimiento del banco?'))return;b.disabled=true;await api('borrarMovimiento',SES,b.dataset.id);toast('Movimiento borrado');await cargarAdmin()}
+    if(a==='salir'){await api('salir',SES).catch(()=>{});guardarSesion(null,null);pantallaLogin()}
+    if(a==='verPass'){pantallaPass(false)}
+    if(a==='volver'){iniciar()}
+    if(a==='ajustes'){const ns=[...document.querySelectorAll('.en-n')],ts=[...document.querySelectorAll('.en-t')];b.disabled=true;
+      await api('guardarAjustes',SES,document.getElementById('tope').value,ns.map((n,i)=>({nombre:n.value,tel:ts[i].value})));toast('Cambios guardados');await cargarAdmin()}
+  }catch(e){if(!e.silencio)toast(msg(e));b.disabled=false}
+});
+document.addEventListener('input',ev=>{
+  if(ev.target.closest('#form'))calc();
+  if(ev.target.id==='fq'){filtro.q=ev.target.value;clearTimeout(vistaHist._t);vistaHist._t=setTimeout(()=>{renderAdmin();const q=document.getElementById('fq');q.focus();q.setSelectionRange(q.value.length,q.value.length)},300)}
+});
+document.addEventListener('change',ev=>{
+  const t=ev.target;
+  if(t.id==='archivo'){archivoSel=t.files[0]||null;return}
+  if(t.dataset.cert){const f=t.files[0];if(f)subirCert(t.dataset.cert,f);t.value='';return}
+  if(t.id==='ft'){filtro.tipo=t.value;renderAdmin()}
+  if(t.id==='bf'){bancoFiltro=t.value;renderAdmin()}
+  if(t.id==='fe'){filtro.estado=t.value;renderAdmin()}
+});
+document.addEventListener('submit',async ev=>{
+  ev.preventDefault();const fm=ev.target;
+  if(fm.id==='fLogin'||fm.id==='fPass'){
+    const er=fm.querySelector('.err'),bt=fm.querySelector('[type=submit]');er.textContent='';bt.disabled=true;
+    try{
+      if(fm.id==='fLogin'){const r=await api('entrar',fm.querySelector('#u').value,fm.querySelector('#p').value);guardarSesion(r.sesion,r.rol);
+        if(r.cambiar){pantallaPass(true,fm.querySelector('#p').value);return}await iniciar()}
+      else{const n1=fm.querySelector('#n1').value,n2=fm.querySelector('#n2').value;
+        if(n1!==n2){er.textContent='Las dos contraseñas nuevas no coinciden.';bt.disabled=false;return}
+        await api('cambiarContrasena',SES,fm.querySelector('#pa').value,n1);toast('Contraseña cambiada');await iniciar()}
+    }catch(e){if(!e.silencio){er.textContent=msg(e);bt.disabled=false}}
+    return;
+  }
+  if(fm.id==='fVP'){
+    const er=fm.querySelector('.err'),bt=fm.querySelector('[type=submit]'),v=id=>fm.querySelector('#'+id).value;er.textContent='';bt.disabled=true;
+    try{await api('cargarVacPendientes',SES,{clave:v('vp-p'),temporada:v('vp-t'),dias:v('vp-d'),vence:v('vp-v'),nota:v('vp-n')});toast('Pendientes cargados');await cargarAdmin();
+      document.getElementById('fVP')?.scrollIntoView({block:'center'})}
+    catch(e){if(!e.silencio)er.textContent=msg(e);bt.disabled=false}
+    return;
+  }
+  if(fm.id==='fCred'||fm.id==='fUso'){
+    const er=fm.querySelector('.err'),bt=fm.querySelector('[type=submit]'),cr=fm.id==='fCred',v=id=>fm.querySelector('#'+id).value;er.textContent='';
+    const claves=cr?[...fm.querySelectorAll('.cr-p:checked')].map(c=>c.value):[v('us-p')].filter(Boolean);
+    if(!claves.length){er.textContent=cr?'Marcá quiénes trabajaron.':'Elegí el empleado.';return}
+    bt.disabled=true;
+    try{
+      const r=await api('cargarBanco',SES,cr?{movimiento:'Crédito',claves,fecha:v('cr-f'),dias:v('cr-d'),motivo:v('cr-m'),detalle:v('cr-x')}:{movimiento:'Uso',claves,fecha:v('us-f'),dias:v('us-d'),motivo:v('us-m')});
+      toast(cr?(r.cargados===1?'Se sumó a 1 persona':'Se sumó a '+r.cargados+' personas'):'Descontado del banco');
+      await cargarAdmin();
+      if(r.repetidos&&r.repetidos.length) alert('Ya tenían cargado ese día, no se sumó de nuevo: '+r.repetidos.join(', '));
+    }catch(e){if(!e.silencio)er.textContent=msg(e);bt.disabled=false}
+    return;
+  }
+  const t=fm.dataset.t,err=document.getElementById('err');err.textContent='';
+  const v=id=>{const el=fm.querySelector('#'+id);return el?el.value.trim():''};
+  const d={tipo:t,desde:v('desde'),hasta:v('hasta'),trabajado:v('trabajado'),monto:v('monto'),devolucion:v('devolucion'),modalidad:v('modalidad'),categoria:v('categoria'),motivo:v('motivo'),certificado:!!(fm.querySelector('#certificado')||{}).checked};
+  if(['dia','adelanto'].includes(t)&&!d.motivo){err.textContent='Contá brevemente el motivo.';return}
+  const btn=fm.querySelector('[type=submit]');btn.disabled=true;btn.textContent='Enviando…';
+  try{
+    const r=await api('enviarPedido',SES,d);const arch=archivoSel;
+    tipoSel=null;archivoSel=null;ultimo=r;toast(t==='ausencia'?'Aviso enviado':'Pedido enviado');await cargarEmp();
+    document.querySelector('.aviso')?.scrollIntoView({block:'center'});
+    if(arch) await subirCert(r.id,arch);
+  }catch(e){err.textContent=msg(e);btn.disabled=false;btn.textContent=t==='ausencia'?'Enviar aviso':'Enviar pedido'}
+});
+
+/* =================== Arranque =================== */
+function pantallaLogin(aviso){
+  document.getElementById('menu').hidden=true;document.getElementById('quien').textContent='Pedidos y licencias';
+  app.innerHTML='<form class="login" id="fLogin" novalidate><h2>Entrar</h2>'+(aviso?'<p class="note">'+esc(aviso)+'</p>':'')+
+    '<label class="f">Usuario<span class="h">Tu DNI, sin puntos</span><input type="text" id="u" autocomplete="username" autocapitalize="none" required></label>'+
+    '<label class="f">Contraseña<input type="password" id="p" autocomplete="current-password" required></label>'+
+    '<button class="btn pri" type="submit">Entrar</button><p class="err"></p><p class="muted" style="font-size:.88rem">¿No tenés usuario o te olvidaste la contraseña? Pedíselo a Recursos Humanos.</p></form>';
+  document.getElementById('u').focus();
+}
+function pantallaPass(obligatorio,temporal){
+  app.innerHTML='<form class="login" id="fPass" novalidate><h2>'+(obligatorio?'Elegí tu contraseña':'Cambiar contraseña')+'</h2>'+
+    (obligatorio?'<p class="muted">Estás usando una contraseña temporal. Elegí una nueva que solo sepas vos, de al menos 6 caracteres.</p>':'')+
+    '<label class="f"'+(obligatorio?' hidden':'')+'>Contraseña actual<input type="password" id="pa" autocomplete="current-password" value="'+esc(temporal||'')+'"></label>'+
+    '<label class="f">Contraseña nueva<input type="password" id="n1" autocomplete="new-password" minlength="6"></label>'+
+    '<label class="f">Repetila<input type="password" id="n2" autocomplete="new-password" minlength="6"></label>'+
+    '<button class="btn pri" type="submit">Guardar contraseña</button>'+(obligatorio?'':'<button class="btn" type="button" data-act="volver">Cancelar</button>')+'<p class="err"></p></form>';
+  document.getElementById('n1').focus();
+}
+let pedidoVisto=false;
+function irAPedido(){
+  if(!PEDIDO||pedidoVisto||!A)return; pedidoVisto=true;
+  const r=A.pedidos.find(x=>x.Id===PEDIDO); if(!r){toast('Ese pedido ya no existe');return}
+  if(r.Estado!=='Pendiente'){tab='hist';filtro={tipo:'',estado:'',q:''};renderAdmin();toast('Ese pedido ya fue respondido: '+etiqueta(r).toLowerCase())}
+  const el=document.getElementById('ped-'+PEDIDO); if(!el)return;
+  el.scrollIntoView({block:'center'}); el.style.boxShadow='0 0 0 3px var(--brand)'; setTimeout(()=>el.style.boxShadow='',4000);
+}
+async function iniciar(){
+  if(!SES){pantallaLogin();return}
+  document.getElementById('menu').hidden=false;app.innerHTML='<p class="muted">Cargando…</p>';
+  try{ if(ROL==='admin'){ await cargarAdmin(); irAPedido(); } else await cargarEmp(); }
+  catch(e){ if(!e.silencio) app.innerHTML='<div class="vacio">'+esc(msg(e))+'</div>'; }
+}
+iniciar();
+</script>
+</body>
+</html>

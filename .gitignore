@@ -1,0 +1,8 @@
+# Datos reales del personal (DNI, CUIL, sueldos): nunca al repositorio
+src/Datos.gs
+*.xlsx
+*.csv
+
+# Credenciales de clasp
+.clasprc.json
+.clasp.json
